@@ -104,7 +104,7 @@ int make_keyimg(const char *key, const char *outpath)
             if ( ((j+1) % IMGSIZE) != 0 ) {
                 fseek(fpin, -rgbsize, SEEK_CUR);
                 if (f_pxlclr)
-                    dgt_i -= 6;
+                    dgt_i -= SIZE_RGB;
             }
         }
 

@@ -36,6 +36,7 @@ int extract_keyimg(char *key, const char *path)
     int padding = (4 - (bih.width * rgbsize) % 4) % 4;
     int newcol = 0;
     int newrow = 0;
+    int len = 0;
     int i, j;
 
     for (i = 0; i < bih.height; ++i) {
@@ -48,12 +49,14 @@ int extract_keyimg(char *key, const char *path)
                             && !(rgb.blue == BKRNDCLR 
                             &&   rgb.green == BKRNDCLR 
                             &&   rgb.red == BKRNDCLR)) {
-                char buf[7];
-                snprintf(buf, sizeof(buf), "%02x%02x%02x", rgb.blue, rgb.green, rgb.red);
-                strncat(key, buf, sizeof(buf)-1);
+
+                char buf[SIZE_RGB];
+                sprintf(buf, "%02x%02x%02x", rgb.blue, rgb.green, rgb.red);  /* No NULL terminator*/
+                memcpy(&key[len], buf, SIZE_RGB);
+                len += SIZE_RGB;
 
                 /* Return after the first KEYLEN digits */
-                if (strlen(key) >= KEYLEN) {
+                if (len >= KEYLEN) {
                     key[KEYLEN] = '\0';
                     fclose(fp);
                     return 0;
