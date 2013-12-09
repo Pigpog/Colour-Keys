@@ -13,5 +13,8 @@
 /* Tox key-image signature */
 #define TOXCODE   0x7854
 
+/* size of RGB sequence */
+#define SIZE_RGB 6
+
 int make_keyimg(const char *KEY, const char *outpath);
 int extract_keyimg(char *KEY, const char *path);
