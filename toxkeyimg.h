@@ -13,5 +13,5 @@
 /* Tox key-image signature */
 #define TOXCODE   0x7854
 
-int make_keyimg(char KEY[], const char *outpath);
-char *extract_keyimg(char KEY[], const char *path);
+int make_keyimg(const char *KEY, const char *outpath);
+int extract_keyimg(char *KEY, const char *path);

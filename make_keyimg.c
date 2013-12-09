@@ -14,24 +14,28 @@
 /* Default path to template key */
 #define INNAME "keytemplate.tox"
 
-int make_keyimg(char KEY[], const char *outpath) 
+int make_keyimg(const char *key, const char *outpath) 
 {
     FILE *fpin = fopen(INNAME, "r");
-    if (!fpin) {
+
+    if (fpin == NULL) {
         printf("Template image not found\n");
-        return 2;
+        return -1;
     }
 
     FILE *fpout = fopen(outpath, "w");
-    if (!fpout) {
+
+    if (fpout == NULL) {
         printf("Error opening write file. Exiting.\n");
         fclose(fpin);
-        return 2;
+        return -2;
     }
 
-    if (strlen(KEY) != KEYLEN) {
+    if (strlen(key) != KEYLEN) {
+        fclose(fpin);
+        fclose(fpout);
         printf("Incorrect key length\n");
-        return 2;
+        return -3;
     }
 
     /* Read template header info */
@@ -48,7 +52,7 @@ int make_keyimg(char KEY[], const char *outpath)
         fclose(fpin);
         fclose(fpout);
         printf("Invalid file format.\n");
-        return 3;
+        return -4;
     }
 
     int rgbsize = sizeof(RGB);
@@ -68,6 +72,7 @@ int make_keyimg(char KEY[], const char *outpath)
     int dgt_i = 0;
     for (i = 0; i < bih.height; ++i) {
         int dgt_i_strt = dgt_i;
+
         for (j = 0; j < bih.width; ++j) {
             bool f_pxlclr = false;
             RGB rgb;
@@ -77,41 +82,46 @@ int make_keyimg(char KEY[], const char *outpath)
             if (rgb.blue == DFLTCLR && rgb.green == DFLTCLR && rgb.red == DFLTCLR) {
                 f_pxlclr = true;
                 char buf[3];
-                char btmp0 = KEY[dgt_i++ % KEYLEN];
-                char btmp1 = KEY[dgt_i++ % KEYLEN];
+                char btmp0 = key[dgt_i++ % KEYLEN];
+                char btmp1 = key[dgt_i++ % KEYLEN];
                 snprintf(buf, sizeof(buf), "%c%c", btmp0, btmp1);
                 rgb.blue = strtol(buf, NULL, 16);
 
-                char gtmp0 = KEY[dgt_i++ % KEYLEN];
-                char gtmp1 = KEY[dgt_i++ % KEYLEN];
+                char gtmp0 = key[dgt_i++ % KEYLEN];
+                char gtmp1 = key[dgt_i++ % KEYLEN];
                 snprintf(buf, sizeof(buf), "%c%c", gtmp0, gtmp1);
                 rgb.green = strtol(buf, NULL, 16);
 
-                char rtmp0 = KEY[dgt_i++ % KEYLEN];
-                char rtmp1 = KEY[dgt_i++ % KEYLEN];
+                char rtmp0 = key[dgt_i++ % KEYLEN];
+                char rtmp1 = key[dgt_i++ % KEYLEN];
                 snprintf(buf, sizeof(buf), "%c%c", rtmp0, rtmp1);
                 rgb.red = strtol(buf, NULL, 16);
             }
+
             fwrite(&rgb, rgbsize, 1, fpout);
 
             /* Scale pixel horizontally */
-            if (((j+1) % IMGSIZE) != 0) {
+            if ( ((j+1) % IMGSIZE) != 0 ) {
                 fseek(fpin, -rgbsize, SEEK_CUR);
                 if (f_pxlclr)
                     dgt_i -= 6;
             }
         }
+
         int k;
+
         for (k = 0; k < new_padding; ++k)
             fputc(0x00, fpout);
 
         /* Scale pixel vertically */
-        if (((i+1) % IMGSIZE) != 0) {
+        if ( ((i + 1) % IMGSIZE) != 0 ) {
             fseek(fpin, -old_width * rgbsize, SEEK_CUR);
             dgt_i = dgt_i_strt;
-        }else
+        } else {
             fseek(fpin, old_padding, SEEK_CUR);
+        }
     }
+
     fclose(fpin);
     fclose(fpout);
     return 0;

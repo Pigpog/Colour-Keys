@@ -1,5 +1,5 @@
 /*
- * Extracts a 38 byte tox public key/KEY from an encoded tox key-image
+ * Extracts a 38 byte tox public key/key from an encoded tox key-image
  */
 
 #include <stdio.h>
@@ -9,12 +9,13 @@
 #include "toxkeyimg.h"
 #include "bitmap.h"
 
-char *extract_keyimg(char KEY[], const char *path)
+int extract_keyimg(char *key, const char *path)
 {
     FILE *fp = fopen(path, "r");
-    if (!fp) {
+
+    if (fp == NULL) {
         printf("File not found\n");;
-        return NULL;
+        return -1;
     }
 
     BITMAPFILEHEADER bfh;
@@ -28,7 +29,7 @@ char *extract_keyimg(char KEY[], const char *path)
                     || bih.bit_count != 24 || bih.compression != 0) {
         fclose(fp);
         printf("Invalid file format.\n");
-        return NULL;
+        return -2;
     }
 
     int rgbsize = sizeof(RGB);
@@ -49,21 +50,23 @@ char *extract_keyimg(char KEY[], const char *path)
                             &&   rgb.red == BKRNDCLR)) {
                 char buf[7];
                 snprintf(buf, sizeof(buf), "%02x%02x%02x", rgb.blue, rgb.green, rgb.red);
-                strncat(KEY, buf, sizeof(buf)-1);
+                strncat(key, buf, sizeof(buf)-1);
 
                 /* Return after the first KEYLEN digits */
-                if (strlen(KEY) >= KEYLEN) {
-                    KEY[KEYLEN] = '\0';
+                if (strlen(key) >= KEYLEN) {
+                    key[KEYLEN] = '\0';
                     fclose(fp);
-                    return KEY;
+                    return 0;
                 }
             }
         }
-        newrow = (newrow+1) % IMGSIZE;
+
+        newrow = (newrow + 1) % IMGSIZE;
         fseek(fp, padding, SEEK_CUR);
     }
+
     fclose(fp);
     printf("Something went wrong\n");
-    return NULL;
+    return -3;
 }
 
