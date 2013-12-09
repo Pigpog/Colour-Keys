@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Extracts a 38 byte tox public key/key from an encoded tox key-image
+=======
+ * Extracts a 38 byte tox public key from an encoded tox key-image
+>>>>>>> 697bed83d4f8a2d1338f599157fc8a571c507ef6
  */
 
 #include <stdio.h>

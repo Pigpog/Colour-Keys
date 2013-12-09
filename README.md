@@ -1,4 +1,4 @@
-keypixels
+Colour-Keys
 =========
 
 Transforms a hexadecimal key into a colourful encoded image, and allows for reversal of the process to obtain the original key. This allows for a simple means of public key exchange, much like a .pub file, but more stylish (in my opinion).
