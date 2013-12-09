@@ -41,13 +41,13 @@ int main(int argc, char *argv[])
         const char *outpath = "testkeyimg.tox";
 
         /* Generate new key image */
-        char key_in[KEYLEN] = {'\0'};
+        char key_in[BUF_SIZE] = {'\0'};
         random_key(key_in);
 
         assert (make_keyimg(key_in, outpath) == 0);
 
         /* Extract key from generated image */
-        char key_out[KEYLEN] = {'\0'};
+        char key_out[BUF_SIZE] = {'\0'};
 
         assert (extract_keyimg(key_out, outpath) == 0);
 

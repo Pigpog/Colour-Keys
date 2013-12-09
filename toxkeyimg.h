@@ -1,6 +1,9 @@
 /* number of chars in a tox public key */
 #define KEYLEN     76
 
+/* Buffers need extra room for remainder bytes on last write */
+#define BUF_SIZE 80
+
 /* factor by which the key image is enlarged from the template */
 #define IMGSIZE   5
 
