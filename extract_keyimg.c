@@ -50,9 +50,9 @@ int extract_keyimg(char *key, const char *path)
                             &&   rgb.green == BKRNDCLR 
                             &&   rgb.red == BKRNDCLR)) {
 
-                char buf[SIZE_RGB];
-                sprintf(buf, "%02x%02x%02x", rgb.blue, rgb.green, rgb.red);  /* No NULL terminator*/
-                memcpy(&key[len], buf, SIZE_RGB);
+                char buf[7];
+                snprintf(buf, sizeof(buf), "%02x%02x%02x", rgb.blue, rgb.green, rgb.red);
+                strncat(key, buf, sizeof(buf)-1);
                 len += SIZE_RGB;
 
                 /* Return after the first KEYLEN digits */
